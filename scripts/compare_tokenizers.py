@@ -25,7 +25,7 @@ from rich import box
 from rich.console import Console
 from rich.table import Table
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = Path(__file__).resolve().parent
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
@@ -54,8 +54,6 @@ EncodeFn = Callable[[str], list[str]]
 
 def read_lines(path: Path) -> list[str]:
     """Non-empty stripped lines."""
-    if not path.is_file():
-        return []
     return [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
@@ -332,22 +330,11 @@ def main() -> None:
     control = read_lines(args.control)
 
     # ── 1. Curated probes (illustration) ─────────────────────────────────────
-    if probes:
-        print_probe_table(probes, columns)
-        print_set_metrics("Medical probes (illustration)", probes, columns)
-    else:
-        console.print(
-            f"[yellow]skip probe tables: {args.probes} not found[/]"
-        )
-
-    if control:
-        print_set_metrics(
-            "General-English control (custom-med is not required to win)", control, columns
-        )
-    else:
-        console.print(
-            f"[yellow]skip control metrics: {args.control} not found[/]"
-        )
+    print_probe_table(probes, columns)
+    print_set_metrics("Medical probes (illustration)", probes, columns)
+    print_set_metrics(
+        "General-English control (custom-med is not required to win)", control, columns
+    )
 
     # ── 2. Single-token-rate on domain terms ─────────────────────────────────
     print_single_token_table(DOMAIN_TERMS, columns)
